@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'journalAPI',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +66,8 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTH_USER_MODEL = "myapp.User"
 
 WSGI_APPLICATION = 'journal.wsgi.application'
 
