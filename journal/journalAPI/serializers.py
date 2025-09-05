@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Capsule
+from .models import User, Capsule, Draft
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,4 +15,10 @@ class CapsuleSerializer(serializers.ModelSerializer):
     
     def get_release_date(self, capsule):
         return capsule.creation_date + capsule.locked_time
+
+class DraftSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Draft
+        fields = ["message", "locked_time"]
+        read_only_fields = ["creation_date", "modified_date"]
     
