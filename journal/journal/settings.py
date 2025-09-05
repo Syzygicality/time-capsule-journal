@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'journalAPI',
     'rest_framework',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
