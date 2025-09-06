@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-AUTH_USER_MODEL = "myapp.User"
+AUTH_USER_MODEL = "journalAPI.User"
 
 WSGI_APPLICATION = 'journal.wsgi.application'
 
@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'journal.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'journal',
+        'USER': 'journalist',
+        'PASSWORD': 'moongod',
+        'HOST': 'localhost',
+        'PORT': '5432', 
     }
 }
 
