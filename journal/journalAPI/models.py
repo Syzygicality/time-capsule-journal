@@ -14,7 +14,7 @@ class Capsule(models.Model):
     capsule_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     reply = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
-    message = models.TextField(blank=False, null=False)
+    encrypted_message = models.TextField(blank=False, null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
     release_date = models.DateTimeField()
 
