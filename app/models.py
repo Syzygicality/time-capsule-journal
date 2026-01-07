@@ -24,6 +24,7 @@ class APIKey(SQLModel, table=True):
     id: UUID = Field(primary_key=True, default_factory=uuid4)
     user_id: UUID = Field(foreign_key="user.id", ondelete="CASCADE", index=True)
     hashed_key: str = Field(max_length=64, index=True)
+    salt: str = Field()
 
     user: "User" = Relationship(back_populates="api_key")
 
