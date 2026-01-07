@@ -24,7 +24,7 @@ class UserCreateSchema(BaseModel):
 
     @model_validator(mode="after")
     def username_check(self) -> Self:
-        if self.username and " " in self.username:
+        if " " in self.username:
             raise ValueError("Username given cannot contain spaces.")
         return self
     
@@ -47,7 +47,7 @@ class UserUpdateSchema(BaseModel):
 
     @model_validator(mode="after")
     def username_check(self) -> Self:
-        if " " in self.username:
+        if self.username and " " in self.username:
             raise ValueError("Username given cannot contain spaces.")
         return self
 
