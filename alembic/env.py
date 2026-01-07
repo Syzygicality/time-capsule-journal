@@ -9,7 +9,7 @@ from app import models  # noqa
 from app.database import engine, DATABASE_URL
 
 from sqlmodel import SQLModel
-
+import sqlmodel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
