@@ -1,5 +1,5 @@
 from app.models import APIKey
-from .encryption import verify_api_key
+from app.utils.encryption import verify_api_key
 
 from fastapi import Header, HTTPException
 from sqlmodel import Session, select

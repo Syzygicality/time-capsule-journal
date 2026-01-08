@@ -1,4 +1,4 @@
-from .helpers import get_random_string
+from app.utils.helpers import get_random_string
 
 from passlib.context import CryptContext
 import hashlib

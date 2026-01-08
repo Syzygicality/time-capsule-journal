@@ -1,4 +1,4 @@
-from .utils.helpers import current_time
+from app.utils.helpers import current_time
 
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime, timedelta

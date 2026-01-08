@@ -1,4 +1,4 @@
-from .schemas import (
+from app.users.schemas import (
     UserCreateSchema, 
     UserUpdateSchema, 
     UserSchema, 
@@ -7,7 +7,7 @@ from .schemas import (
     UserPasswordResetSchema
 )
 
-from .crud import (
+from app.users.crud import (
     create_user_account,
     generate_api_key,
     get_user_details,
@@ -22,9 +22,9 @@ from app.utils.authentication import access_api_key
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
-router = APIRouter(prefix="/users/", tags=["User"])
+router = APIRouter(prefix="/users", tags=["User"])
 
-@router.post("registration", response_model=UserSchema)
+@router.post("/registration", response_model=UserSchema)
 def create_user(user_data: UserCreateSchema, session: Session = Depends(get_db)):
     return create_user_account(
         session,
@@ -33,7 +33,7 @@ def create_user(user_data: UserCreateSchema, session: Session = Depends(get_db))
         user_data.password
     )
 
-@router.post("api-key/create", response_model=APIKeySchema)
+@router.post("/api-key/create", response_model=APIKeySchema)
 def create_api_key(user_data: APIKeyCreateSchema, session: Session = Depends(get_db)):
     key_obj, raw_key = generate_api_key(
         session,
@@ -42,14 +42,14 @@ def create_api_key(user_data: APIKeyCreateSchema, session: Session = Depends(get
     )
     return {"key": raw_key}
 
-@router.get("me", response_model=UserSchema)
+@router.get("/me", response_model=UserSchema)
 def get_user(api_key: str = Depends(access_api_key), session: Session = Depends(get_db)):
     return get_user_details(
         session,
         api_key
     )
 
-@router.patch("me/edit", response_model=UserSchema)
+@router.patch("/me/edit", response_model=UserSchema)
 def update_user(user_data: UserUpdateSchema, api_key: str = Depends(access_api_key), session: Session = Depends(get_db)):
     return update_user_details(
         session,
@@ -58,7 +58,7 @@ def update_user(user_data: UserUpdateSchema, api_key: str = Depends(access_api_k
         user_data.email
     )
 
-@router.post("api-key/regen", response_model=APIKeySchema)
+@router.post("/api-key/regen", response_model=APIKeySchema)
 def regenerate_api_key(user_data: APIKeyCreateSchema, session: Session = Depends(get_db)):
     key_obj, raw_key = regen_api_key(
         session,
@@ -67,7 +67,7 @@ def regenerate_api_key(user_data: APIKeyCreateSchema, session: Session = Depends
     )
     return {"key": raw_key}
 
-@router.post("me/change-password", response_model=UserSchema)
+@router.post("/me/change-password", response_model=UserSchema)
 def change_user_password(user_data: UserPasswordResetSchema, api_key: str = Depends(access_api_key), session: Session = Depends(get_db)):
     return update_user_password(
         session,
