@@ -45,6 +45,20 @@ class UserUpdateSchema(BaseModel):
     username: str | None = None
     email: EmailStr | None = None
 
+    @model_validator(mode="before")
+    @classmethod
+    def clean_email(cls, data):
+        if "email" in data and data["email"]:
+            data["email"] = data["email"].strip().lower()
+        return data
+    
+    @model_validator(mode="before")
+    @classmethod
+    def strip_username(cls, data):
+        if "username" in data and data["username"]:
+            data["username"] = data["username"].strip()
+        return data
+
     @model_validator(mode="after")
     def username_check(self) -> Self:
         if self.username and " " in self.username:
@@ -55,7 +69,7 @@ class UserSchema(BaseModel):
     username: str
     email: EmailStr | None
 
-class LoginSchema(BaseModel):
+class APIKeyCreateSchema(BaseModel):
     username: str
     password: str
 
