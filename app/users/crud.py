@@ -37,7 +37,7 @@ def generate_api_key(session: Session, username: str, password: str) -> tuple[AP
     )
     session.add(key_obj)
     session.commit()
-    session.refresh()
+    session.refresh(key_obj)
     return key_obj, raw_key
 
 def get_user_details(session: Session, api_key: str) -> User:
@@ -56,7 +56,6 @@ def update_user_details(session: Session, api_key: str, username: Optional[str],
         user.email = email
     session.add(user)
     session.commit()
-    session.refresh()
     return user
 
 def regen_api_key(session: Session, username: str, password: str) -> tuple[APIKey, str]:
@@ -72,5 +71,14 @@ def regen_api_key(session: Session, username: str, password: str) -> tuple[APIKe
     key_obj.hashed_key, key_obj.salt = hash_api_key(raw_key)
     session.add(key_obj)
     session.commit()
-    session.refresh()
     return key_obj, raw_key
+
+def update_user_password(session: Session, api_key: str, old_password: str, new_password: str) -> User:
+    key_obj = authenticate_api_key(session, api_key)
+    user = key_obj.user
+    if not verify_password(old_password, user.hashed_password):
+        raise ValueError("Password given is incorrect.")
+    user.hashed_password = hash_password(new_password)
+    session.add(user)
+    session.commit()
+    return user

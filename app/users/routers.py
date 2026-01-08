@@ -3,7 +3,8 @@ from .schemas import (
     UserUpdateSchema, 
     UserSchema, 
     APIKeyCreateSchema, 
-    APIKeySchema
+    APIKeySchema,
+    UserPasswordResetSchema
 )
 
 from .crud import (
@@ -11,7 +12,8 @@ from .crud import (
     generate_api_key,
     get_user_details,
     update_user_details,
-    regen_api_key
+    regen_api_key,
+    update_user_password
 )
 
 from app.database import get_db
@@ -58,9 +60,18 @@ def update_user(user_data: UserUpdateSchema, api_key: str = Depends(access_api_k
 
 @router.post("api-key/regen", response_model=APIKeySchema)
 def regenerate_api_key(user_data: APIKeyCreateSchema, session: Session = Depends(get_db)):
-    key_obj, raw_key = generate_api_key(
+    key_obj, raw_key = regen_api_key(
         session,
         user_data.username,
         user_data.password
     )
     return {"key": raw_key}
+
+@router.post("me/change-password", response_model=UserSchema)
+def change_user_password(user_data: UserPasswordResetSchema, api_key: str = Depends(access_api_key), session: Session = Depends(get_db)):
+    return update_user_password(
+        session,
+        api_key,
+        user_data.old_password,
+        user_data.new_password
+    )

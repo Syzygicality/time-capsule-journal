@@ -76,3 +76,19 @@ class APIKeyCreateSchema(BaseModel):
 class APIKeySchema(BaseModel):
     key: str
 
+class UserPasswordResetSchema(BaseModel):
+    old_password: str
+    new_password: str = Field(min_length=8)
+    confirm_new_password: str = Field(min_length=8)
+
+    @model_validator(mode="after")
+    def new_password_check(self) -> Self:
+        if self.new_password != self.confirm_new_password:
+            raise ValueError("Passwords given are not the same.")
+        if self.new_password == self.new_password.lower():
+            raise ValueError("Password given must contain at least one uppercase character.")
+        if not any(char.isdigit() for char in self.new_password):
+            raise ValueError("Password given must contain at least one number")
+        if " " in self.new_password:
+            raise ValueError("Password given cannot contain spaces.")
+        return self
