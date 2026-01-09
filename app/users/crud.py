@@ -28,17 +28,19 @@ def generate_api_key(session: Session, username: str, password: str) -> tuple[AP
         raise ValueError("Password given is incorrect.")
     if user.api_key:
         raise ValueError("Your API key already exists. If you have lost/forgotten your key, you can regenerate a new key.")
-    raw_key = get_random_string(64)
+    prefix = get_random_string(12)
+    raw_key = get_random_string(48)
     hashed_key, salt = hash_api_key(raw_key)
     key_obj = APIKey(
         user_id=user.id,
+        prefix=prefix,
         hashed_key=hashed_key,
         salt=salt
     )
     session.add(key_obj)
     session.commit()
     session.refresh(key_obj)
-    return key_obj, raw_key
+    return key_obj, prefix + "-" + raw_key
 
 def get_user_details(session: Session, api_key: str) -> User:
     key_obj = authenticate_api_key(session, api_key)
@@ -47,13 +49,14 @@ def get_user_details(session: Session, api_key: str) -> User:
 def update_user_details(session: Session, api_key: str, username: Optional[str], email: Optional[str],) -> User:
     key_obj = authenticate_api_key(session, api_key)
     user = key_obj.user
-    if not user.updatable:
-        time_left = (user.last_updated + timedelta(days=7)) - current_time()
-        raise ValueError(f"You cannot update your account details with 7 days of your last update. Please wait {time_left}.")
+    if user.last_updated and current_time() < user.last_updated + timedelta(days=3):
+        time_left = (user.last_updated + timedelta(days=3)) - current_time()
+        raise ValueError(f"You cannot update your account details with 3 days of your last update. Please wait {time_left}.")
     if username:
         user.username = username
     if email:
         user.email = email
+    user.last_updated = current_time()
     session.add(user)
     session.commit()
     return user
