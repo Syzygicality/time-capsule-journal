@@ -26,6 +26,7 @@ router = APIRouter(prefix="/users", tags=["User"])
 
 @router.post("/registration", response_model=UserSchema)
 def create_user(user_data: UserCreateSchema, session: Session = Depends(get_db)):
+    
     return create_user_account(
         session,
         user_data.username,
