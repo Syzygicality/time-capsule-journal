@@ -89,7 +89,7 @@ def update_user_password(session: Session, api_key: str, old_password: str, new_
     session.commit()
     return user
 
-def delete_user_account(session: Session, api_key: str):
+def delete_user_account(session: Session, api_key: str) -> dict[str]:
     key_obj = authenticate_api_key(session, api_key)
     user = key_obj.user
     session.delete(user)

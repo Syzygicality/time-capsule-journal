@@ -32,6 +32,7 @@ class Capsule(SQLModel, table=True):
     content: str = Field(max_length=250)
     creation_date: datetime = Field(default_factory=current_time)
     time_held: timedelta = Field()
+    release_date: datetime = Field()
     replying_to_id: Optional[UUID] = Field(default=None, foreign_key="capsule.id", nullable=True)
     reply_allowed: bool = Field(default=True)
 
