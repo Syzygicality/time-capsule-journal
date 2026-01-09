@@ -88,3 +88,10 @@ def update_user_password(session: Session, api_key: str, old_password: str, new_
     session.add(user)
     session.commit()
     return user
+
+def delete_user_account(session: Session, api_key: str):
+    key_obj = authenticate_api_key(session, api_key)
+    user = key_obj.user
+    session.delete(user)
+    session.commit()
+    return {"details": "Account successfully deleted."}
