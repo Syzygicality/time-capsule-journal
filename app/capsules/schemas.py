@@ -33,3 +33,4 @@ class CapsuleSchema(BaseModel):
 
 class CapsuleListSchema(BaseModel):
     capsules: List[CapsuleSchema]
+    note: str
