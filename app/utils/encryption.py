@@ -1,12 +1,22 @@
 from app.utils.helpers import get_random_string
+from app.database import getenv
 
 from passlib.context import CryptContext
+from cryptography.fernet import Fernet
 import hashlib
 
 password_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto",
 )
+
+fernet = Fernet(getenv("FERNET_KEY"))
+
+def encrypt_content(content: str) -> str:
+    return fernet.encrypt(content.encode()).decode()
+
+def decrypt_content(ciphertext: str) -> str:
+    return fernet.decrypt(ciphertext.encode()).decode()
 
 MAX_BCRYPT_BYTES = 72
 

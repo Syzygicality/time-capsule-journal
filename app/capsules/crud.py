@@ -1,5 +1,6 @@
 from app.models import Capsule, Conversation
 from app.utils.authentication import authenticate_api_key
+from app.utils.encryption import encrypt_content, decrypt_content
 from app.utils.helpers import current_time
 
 from sqlmodel import Session, select
@@ -17,6 +18,8 @@ def list_capsules(session: Session, api_key: str) -> List[Capsule]:
                             .where(Capsule.release_date < time)
                             .order_by(Capsule.release_date.desc())
                             ).all()
+    for capsule in capsules:
+        capsule.content = decrypt_content(capsule.content)
     return capsules
 
 def create_capsule(session: Session, api_key: str, content: str, time_held: timedelta, replying_to_id: Optional[UUID]) -> dict[str, str]:
@@ -25,7 +28,7 @@ def create_capsule(session: Session, api_key: str, content: str, time_held: time
     time = current_time()
     capsule = Capsule(
         user_id=user.id,
-        content=content,
+        content=encrypt_content(content),
         time_held=time_held,
         release_date=time + time_held,
     )
@@ -69,6 +72,7 @@ def retrieve_capsule(session: Session, api_key: str, capsule_id: UUID) -> Capsul
         raise HTTPException(detail="Capsule ID given does not belong to you.", status_code=status.HTTP_403_FORBIDDEN)
     if capsule.release_date > current_time():
         raise HTTPException(detail="Capsule ID given is still buried.", status_code=status.HTTP_403_FORBIDDEN)
+    capsule.content = decrypt_content(capsule.content)
     return capsule
 
 def list_conversations(session: Session, api_key: str) -> List[Conversation]:
@@ -79,6 +83,8 @@ def list_conversations(session: Session, api_key: str) -> List[Conversation]:
                                       .join(Conversation.latest_capsule)
                                       .order_by(Capsule.release_date.desc())
                                       ).all()
+    for conversation in conversations:
+        conversation.latest_capsule.content = decrypt_content(conversation.latest_capsule.content)
     return conversations
 
 def retrieve_conversation(session: Session, api_key: str, conversation_id: UUID) -> Tuple[List[Capsule], bool]:
@@ -92,6 +98,7 @@ def retrieve_conversation(session: Session, api_key: str, conversation_id: UUID)
     capsule_list = []
     capsule = conversation.latest_capsule
     while capsule:
+        capsule.content = decrypt_content(capsule.content)
         capsule_list.append(capsule)
         capsule = capsule.replying_to
     if conversation.reply_allowed:

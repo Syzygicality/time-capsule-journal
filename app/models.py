@@ -31,7 +31,7 @@ class Capsule(SQLModel, table=True):
     id: UUID = Field(primary_key=True, default_factory=uuid4)
     user_id: UUID = Field(foreign_key="user.id", ondelete="CASCADE", index=True)
     conversation_id: Optional[UUID] = Field(foreign_key="conversation.id", nullable=True, index=True, default=None)
-    content: str = Field(max_length=250)
+    content: str = Field()
     creation_date: datetime = Field(default_factory=current_time)
     time_held: timedelta = Field()
     release_date: datetime = Field()
