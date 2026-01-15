@@ -20,7 +20,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
-router = APIRouter(prefix="/capsules")
+router = APIRouter(prefix="/capsules", tags=["Capsules/Conversations"])
 
 @router.get("", response_model=CapsuleListSchema)
 async def get_capsule_list(api_key: str = Depends(access_api_key), session: AsyncSession = Depends(get_db)):

@@ -23,7 +23,7 @@ from app.utils.authentication import access_api_key
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-router = APIRouter(prefix="/users", tags=["User"])
+router = APIRouter(prefix="/users", tags=["User Management"])
 
 @router.get("/me", response_model=UserSchema)
 async def get_user(api_key: str = Depends(access_api_key), session: AsyncSession = Depends(get_db)):
@@ -32,7 +32,7 @@ async def get_user(api_key: str = Depends(access_api_key), session: AsyncSession
         api_key
     )
 
-@router.post("/registration", response_model=UserSchema)
+@router.post("/me", response_model=UserSchema)
 async def post_user(user_data: UserCreateSchema, session: AsyncSession = Depends(get_db)):
     return await create_user(
         session,

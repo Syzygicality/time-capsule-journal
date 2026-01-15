@@ -1,11 +1,29 @@
-from app.users.routers import router
+from app.users.routers import router as user_router
+from app.capsules.routers import router as capsule_router
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
+from fastapi.openapi.docs import get_swagger_ui_html
 
-app = FastAPI(title="Time Capsule Journal")
+app = FastAPI(
+    title="Time Capsule Journal",
+    description="A personal project aimed at providing a modern alternative to the antiquated art of journalling.",
+    version="1.0.0",
+    docs_url=None,
+)
 
-app.include_router(router)
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title="My API Docs",
+        swagger_ui_parameters={
+            "defaultModelsExpandDepth": -1  # <- disables the Schemas tab
+        }
+    )
+
+app.include_router(user_router)
+app.include_router(capsule_router)
 
 @app.exception_handler(ValueError)
 async def value_error_handler(request: Request, exc: ValueError):
