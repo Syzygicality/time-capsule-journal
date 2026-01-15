@@ -28,4 +28,4 @@ EXPOSE 8000
 
 # ---------- 7. Start the app ----------
 # Render sets $PORT in the environment
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"]
