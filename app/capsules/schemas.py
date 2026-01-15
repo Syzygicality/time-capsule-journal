@@ -33,3 +33,6 @@ class ConversationSchema(BaseModel):
     id: UUID
     latest_capsule: CapsuleSchema
     reply_allowed: bool
+
+class ConversationListSchema(BaseModel):
+    conversations: List[ConversationSchema]

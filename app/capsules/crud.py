@@ -94,4 +94,6 @@ def retrieve_conversation(session: Session, api_key: str, conversation_id: UUID)
     while capsule:
         capsule_list.append(capsule)
         capsule = capsule.replying_to
-    return capsule_list, conversation.reply_allowed
+    if conversation.reply_allowed:
+        return capsule_list
+    return capsule_list[1:]
