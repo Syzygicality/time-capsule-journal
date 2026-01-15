@@ -3,17 +3,18 @@ from app.utils.authentication import authenticate_api_key
 from app.utils.encryption import encrypt_content, decrypt_content
 from app.utils.helpers import current_time
 
-from sqlmodel import Session, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select
 from datetime import timedelta
 from typing import Optional, List, Tuple
 from uuid import UUID
 from fastapi import HTTPException, status
 
-def list_capsules(session: Session, api_key: str) -> List[Capsule]:
-    key_obj = authenticate_api_key(session, api_key)
+async def list_capsules(session: AsyncSession, api_key: str) -> List[Capsule]:
+    key_obj = await authenticate_api_key(session, api_key)
     user = key_obj.user
     time = current_time()
-    capsules = session.exec(select(Capsule)
+    capsules = await session.exec(select(Capsule)
                             .where(Capsule.user_id == user.id)
                             .where(Capsule.release_date < time)
                             .order_by(Capsule.release_date.desc())
@@ -22,8 +23,8 @@ def list_capsules(session: Session, api_key: str) -> List[Capsule]:
         capsule.content = decrypt_content(capsule.content)
     return capsules
 
-def create_capsule(session: Session, api_key: str, content: str, time_held: timedelta, replying_to_id: Optional[UUID]) -> dict[str, str]:
-    key_obj = authenticate_api_key(session, api_key)
+async def create_capsule(session: AsyncSession, api_key: str, content: str, time_held: timedelta, replying_to_id: Optional[UUID]) -> dict[str, str]:
+    key_obj = await authenticate_api_key(session, api_key)
     user = key_obj.user
     time = current_time()
     capsule = Capsule(
@@ -33,7 +34,7 @@ def create_capsule(session: Session, api_key: str, content: str, time_held: time
         release_date=time + time_held,
     )
     if replying_to_id:
-        reply = session.get(Capsule, replying_to_id)
+        reply = await session.get(Capsule, replying_to_id)
         if not reply:
             raise HTTPException(detail="Capsule ID given does not exist.", status_code=status.HTTP_404_NOT_FOUND)
         if reply.user_id != user.id:
@@ -47,25 +48,25 @@ def create_capsule(session: Session, api_key: str, content: str, time_held: time
                 latest_capsule_id=reply.id
             )
             session.add(conversation)
-            session.commit()
-            session.refresh(conversation)
+            await session.commit()
+            await session.refresh(conversation)
         capsule.conversation_id = conversation.id
         capsule.replying_to_id = reply.id
         session.add(capsule)
-        session.commit()
-        session.refresh(capsule)
+        await session.commit()
+        await session.refresh(capsule)
         conversation.latest_capsule_id = capsule.id
-        session.commit()
+        await session.commit()
     else:
         session.add(capsule)
-        session.commit()
-        session.refresh(capsule)
+        await session.commit()
+        await session.refresh(capsule)
     return {"details": "capsule successfully buried."}
 
-def retrieve_capsule(session: Session, api_key: str, capsule_id: UUID) -> Capsule:
-    key_obj = authenticate_api_key(session, api_key)
+async def retrieve_capsule(session: AsyncSession, api_key: str, capsule_id: UUID) -> Capsule:
+    key_obj = await authenticate_api_key(session, api_key)
     user = key_obj.user
-    capsule = session.get(Capsule, capsule_id)
+    capsule = await session.get(Capsule, capsule_id)
     if not capsule:
         raise HTTPException(detail="Capsule ID given does not exist.", status_code=status.HTTP_404_NOT_FOUND)
     if capsule.user_id != user.id:
@@ -75,10 +76,10 @@ def retrieve_capsule(session: Session, api_key: str, capsule_id: UUID) -> Capsul
     capsule.content = decrypt_content(capsule.content)
     return capsule
 
-def list_conversations(session: Session, api_key: str) -> List[Conversation]:
-    key_obj = authenticate_api_key(session, api_key)
+async def list_conversations(session: AsyncSession, api_key: str) -> List[Conversation]:
+    key_obj = await authenticate_api_key(session, api_key)
     user = key_obj.user
-    conversations = session.exec(select(Conversation)
+    conversations = await session.exec(select(Conversation)
                                       .where(Conversation.user_id == user.id)
                                       .join(Conversation.latest_capsule)
                                       .order_by(Capsule.release_date.desc())
@@ -87,10 +88,10 @@ def list_conversations(session: Session, api_key: str) -> List[Conversation]:
         conversation.latest_capsule.content = decrypt_content(conversation.latest_capsule.content)
     return conversations
 
-def retrieve_conversation(session: Session, api_key: str, conversation_id: UUID) -> Tuple[List[Capsule], bool]:
-    key_obj = authenticate_api_key(session, api_key)
+async def retrieve_conversation(session: AsyncSession, api_key: str, conversation_id: UUID) -> Tuple[List[Capsule], bool]:
+    key_obj = await authenticate_api_key(session, api_key)
     user = key_obj.user
-    conversation = session.get(Conversation, conversation_id)
+    conversation = await session.get(Conversation, conversation_id)
     if not conversation:
         raise HTTPException(detail="Conversation ID given does not exist.", status_code=status.HTTP_404_NOT_FOUND)
     if conversation.user_id != user.id:
