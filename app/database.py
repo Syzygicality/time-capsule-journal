@@ -1,6 +1,8 @@
 from os import environ
 from dotenv import load_dotenv
-from sqlmodel import SQLModel, Session, create_engine
+from sqlmodel import SQLModel
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
@@ -16,17 +18,28 @@ DB_LOCATION = getenv("DB_LOCATION")
 DB_PORT = getenv("DB_PORT")
 DB_NAME = getenv("DB_NAME")
 
+# Use asyncpg driver for async Postgres
 DATABASE_URL = (
-    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}"
+    f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}"
     f"@{DB_LOCATION}:{DB_PORT}/{DB_NAME}"
 )
 
-engine = create_engine(
+# Create async engine
+engine = create_async_engine(
     DATABASE_URL,
     echo=False,
     future=True
 )
 
-def get_db():
-    with Session(engine) as session:
+# Async session factory
+async_session = sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False
+)
+
+# Async dependency for FastAPI
+async def get_db():
+    async with async_session() as session:
         yield session
+
