@@ -11,13 +11,9 @@ class CapsuleCreateSchema(BaseModel):
     replying_to_id: UUID | None = None
 
     @model_validator(mode="after")
-    def time_held_check(self) -> Self:
+    def validate_request(self) -> Self:
         if self.time_held < timedelta(0):
             raise ValueError("The holding time given cannot be negative.")
-        return self
-    
-    @model_validator(mode="after")
-    def replying_to_id_check(self) -> Self:
         if self.replying_to_id and self.replying_to_id.version != 4:
             raise ValueError("The ID given to reply to must be a UUID4.")
         return self
@@ -29,8 +25,11 @@ class CapsuleSchema(BaseModel):
     time_held: timedelta
     release_date: datetime
     replying_to_id: UUID | None
-    reply_allowed: bool
 
 class CapsuleListSchema(BaseModel):
     capsules: List[CapsuleSchema]
-    note: str
+
+class ConversationSchema(BaseModel):
+    id: UUID
+    latest_capsule: CapsuleSchema
+    reply_allowed: bool
