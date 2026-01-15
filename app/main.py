@@ -2,7 +2,7 @@ from app.users.routers import router as user_router
 from app.capsules.routers import router as capsule_router
 
 from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 
 app = FastAPI(
@@ -11,6 +11,10 @@ app = FastAPI(
     version="1.0.0",
     docs_url=None,
 )
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return RedirectResponse(url="/docs")
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui():
