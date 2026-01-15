@@ -7,7 +7,7 @@ from fastapi.openapi.docs import get_swagger_ui_html
 
 app = FastAPI(
     title="Time Capsule Journal",
-    description="A personal project aimed at providing a modern alternative to the antiquated art of journalling.",
+    description="A personal project aimed at providing a modern alternative to the antiquated art of journalling.\n\nGitHub Repo: https://github.com/Syzygicality/time-capsule-journal",
     version="1.0.0",
     docs_url=None,
 )
@@ -18,7 +18,7 @@ async def custom_swagger_ui():
         openapi_url=app.openapi_url,
         title="My API Docs",
         swagger_ui_parameters={
-            "defaultModelsExpandDepth": -1  # <- disables the Schemas tab
+            "defaultModelsExpandDepth": -1
         }
     )
 

@@ -61,7 +61,10 @@ async def create_capsule(session: AsyncSession, api_key: str, content: str, time
         session.add(capsule)
         await session.commit()
         await session.refresh(capsule)
-    return {"details": "capsule successfully buried."}
+    return {
+        "details": "capsule successfully buried.",
+        "note": "emailing service currently unavailable."
+    }
 
 async def retrieve_capsule(session: AsyncSession, api_key: str, capsule_id: UUID) -> Capsule:
     key_obj = await authenticate_api_key(session, api_key)
