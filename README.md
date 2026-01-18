@@ -17,23 +17,18 @@ Check it out at [here!](journal.edisonwang.dev)
     * Once a capsule is released, you can "reply" to it.
     * Build threads of conversation with your past self to track personal growth and changes in perspective.
 
+* **Email Notifications**: An automated system to notify users via email when a capsule has been released and is ready to be read.
 
 * **Secure Authentication**:
     * Custom API Key authentication system.
     * Keys are hashed and salted (SHA-256) for security.
     * User passwords are secured using Bcrypt.
 
-
 * **User Management**:
     * Register, update profile, change passwords, and delete accounts.
     * Regenerate API keys securely.
 
-
-
 ## 🚀 Upcoming Features (Roadmap)
-
-* **Email Notifications**: An automated system to notify users via email when a capsule has been released and is ready to be read.
-* *Implementation*: Asynchronous task queueing using **Redis** and **Celery**.
 
 ## Tech Stack
 
