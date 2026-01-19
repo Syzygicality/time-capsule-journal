@@ -23,6 +23,7 @@ class Verification(SQLModel, table=True):
     user_id: UUID = Field(foreign_key="user.id", ondelete="CASCADE", index=True)
     code: int = Field()
     expires_at: datetime = Field()
+    creation_date: datetime = Field(default_factory=current_time)
     attempts: int = Field(default=0)
 
     user: "User" = Relationship(back_populates="verification")
@@ -45,6 +46,7 @@ class Capsule(SQLModel, table=True):
     time_held: timedelta = Field()
     release_date: datetime = Field()
     replying_to_id: Optional[UUID] = Field(default=None, foreign_key="capsule.id", nullable=True)
+    sent: bool = Field(default=False)
 
     user: "User" = Relationship(back_populates="capsules")
     conversation: Optional["Conversation"] = Relationship(back_populates="capsules")
