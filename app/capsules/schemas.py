@@ -12,8 +12,8 @@ class CapsuleCreateSchema(BaseModel):
 
     @model_validator(mode="after")
     def validate_request(self) -> Self:
-        if self.time_held < timedelta(0):
-            raise ValueError("The holding time given cannot be negative.")
+        if self.time_held < timedelta(minutes=15):
+            raise ValueError("The holding time must be at least 15 minutes.")
         if self.replying_to_id and self.replying_to_id.version != 4:
             raise ValueError("The ID given to reply to must be a UUID4.")
         return self
