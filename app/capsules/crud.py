@@ -14,7 +14,7 @@ async def list_capsules(session: AsyncSession, api_key: str) -> List[Capsule]:
     key_obj = await authenticate_api_key(session, api_key)
     user = key_obj.user
     time = current_time()
-    capsules = await session.exec(select(Capsule)
+    capsules = await session.execute(select(Capsule)
                             .where(Capsule.user_id == user.id)
                             .where(Capsule.release_date < time)
                             .order_by(Capsule.release_date.desc())
@@ -83,7 +83,7 @@ async def retrieve_capsule(session: AsyncSession, api_key: str, capsule_id: UUID
 async def list_conversations(session: AsyncSession, api_key: str) -> List[Conversation]:
     key_obj = await authenticate_api_key(session, api_key)
     user = key_obj.user
-    conversations = await session.exec(select(Conversation)
+    conversations = await session.execute(select(Conversation)
                                       .where(Conversation.user_id == user.id)
                                       .join(Conversation.latest_capsule)
                                       .order_by(Capsule.release_date.desc())

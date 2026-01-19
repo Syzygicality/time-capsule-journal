@@ -11,7 +11,7 @@ from fastapi import HTTPException, status
 from secrets import randbelow
 
 async def create_user(session: AsyncSession, username: str, email: Optional[str], password: str) -> User:
-    result = await session.exec(select(exists().where(User.username == username)))
+    result = await session.execute(select(exists().where(User.username == username)))
     if result.scalar():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username given already exists.")
     user = User(
@@ -107,7 +107,7 @@ async def delete_verification(session: AsyncSession, api_key: str, code: int) ->
         raise HTTPException(detail=f"Incorrect verification code. ({verification.attempts} / 3)", status_code=status.HTTP_400_BAD_REQUEST)
 
 async def create_api_key(session: AsyncSession, username: str, password: str) -> tuple[APIKey, str]:
-    user = await session.exec(select(User).where(User.username == username)).first()
+    user = await session.execute(select(User).where(User.username == username)).first()
     if not user:
         raise HTTPException(detail="Username given does not exist.", status_code=status.HTTP_404_NOT_FOUND)
     if not verify_password(password, user.hashed_password):
@@ -129,7 +129,7 @@ async def create_api_key(session: AsyncSession, username: str, password: str) ->
     return key_obj, prefix + "-" + raw_key
 
 async def update_api_key(session: AsyncSession, username: str, password: str) -> tuple[APIKey, str]:
-    user = await session.exec(select(User).where(User.username == username)).first()
+    user = await session.execute(select(User).where(User.username == username)).first()
     if not user:
         raise HTTPException(detail="Username given does not exist.", status_code=status.HTTP_404_NOT_FOUND)
     if not verify_password(password, user.hashed_password):
