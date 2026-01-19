@@ -65,7 +65,6 @@ async def create_capsule(session: AsyncSession, api_key: str, content: str, time
         await session.refresh(capsule)
     return {
         "details": "capsule successfully buried.",
-        "note": "emailing service currently unavailable."
     }
 
 async def retrieve_capsule(session: AsyncSession, api_key: str, capsule_id: UUID) -> Capsule:
