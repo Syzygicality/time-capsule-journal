@@ -13,14 +13,17 @@ from app.users.crud import (
     update_user,
     update_user_password,
     destroy_user,
+    create_verification,
+    delete_verification,
     create_api_key,
-    update_api_key
+    update_api_key,
 )
 
 from app.database import get_db
 from app.utils.authentication import access_api_key
+from app.utils.emailing import send_verification_email
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/users", tags=["User Management"])
@@ -64,6 +67,27 @@ async def delete_user(api_key: str = Depends(access_api_key), session: AsyncSess
     return await destroy_user(
         session,
         api_key
+    )
+
+@router.post("/verify/request")
+async def request_email_verification(background_tasks: BackgroundTasks, api_key: str = Depends(access_api_key), session: AsyncSession = Depends(get_db)):
+    email, code =  await create_verification(
+        session,
+        api_key
+    )
+    background_tasks.add_task(
+        send_verification_email,
+        email,
+        code
+    )
+    return {"details": "Verification code sent, please check your email inbox (may be in spam folder)."}
+
+@router.post("/verify")
+async def send_verification_code(code: int, api_key: str = Depends(access_api_key), session: AsyncSession = Depends(get_db)):
+    return await delete_verification(
+        session,
+        api_key,
+        code
     )
 
 @router.post("/api-key/create", response_model=APIKeySchema)

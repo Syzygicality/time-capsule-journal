@@ -26,6 +26,8 @@ async def list_capsules(session: AsyncSession, api_key: str) -> List[Capsule]:
 async def create_capsule(session: AsyncSession, api_key: str, content: str, time_held: timedelta, replying_to_id: Optional[UUID]) -> dict[str, str]:
     key_obj = await authenticate_api_key(session, api_key)
     user = key_obj.user
+    if not user.email_verified:
+        raise HTTPException(detail="You need to verify your email before creating capsules.", status_code=status.HTTP_403_FORBIDDEN)
     time = current_time()
     capsule = Capsule(
         user_id=user.id,
