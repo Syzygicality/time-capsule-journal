@@ -2,7 +2,7 @@ import asyncio
 import httpx
 import time
 
-URL = "https://journal.edisonwang.dev/" # manually set API endpoint
+URL = "https://journal.edisonwang.dev/" + input("Endpoint: ")
 CONCURRENCY = int(input("Concurrency: "))
 TOTAL_REQUESTS = int(input("Total Requests: "))
 
