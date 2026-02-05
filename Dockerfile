@@ -23,9 +23,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # ---------- 6. Expose port ----------
-# Render automatically sets $PORT, but exposing 8000 is fine for local testing
 EXPOSE 8000
 
-# ---------- 7. Start the app ----------
-# Render sets $PORT in the environment
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"]
+# ---------- 7. Start the app and Celery ----------
+# This runs both Uvicorn and Celery in the same container
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4 & celery -A app.celery_app worker -B --loglevel=info"]
