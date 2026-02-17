@@ -1,6 +1,6 @@
-# Time Capsule Journal
+# Seabottle
 
-**Time Capsule Journal** is a modern, API-first alternative to traditional journaling. It allows users to capture thoughts, lock them away for a specific duration ("bury" them), and only revisit them once they have "released." It facilitates a conversation with your past self by allowing replies to released capsules.
+**Seabottle** is a modern, API-first alternative to traditional journaling. It allows users to capture thoughts, lock them away for a specific duration ("bury" them), and only revisit them once they have "released." It facilitates a conversation with your past self by allowing replies to released capsules.
 
 This project is built with **FastAPI** for high performance and **PostgreSQL** for robust data storage, with a strong focus on privacy and security through encryption.
 
@@ -51,8 +51,8 @@ Check it out at [here!](journal.edisonwang.dev)
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/Syzygicality/time-capsule-journal.git
-cd time-capsule-journal
+git clone https://github.com/Syzygicality/seabottle.git
+cd seabottle
 
 ```
 
@@ -107,7 +107,7 @@ The API will be available at `http://127.0.0.1:8000`.
 
 1. **Build the Image**
 ```bash
-docker build -t time-capsule-journal .
+docker build -t seabottle .
 
 ```
 
@@ -115,7 +115,7 @@ docker build -t time-capsule-journal .
 2. **Run the Container**
 Ensure you pass the required environment variables or use a `.env` file.
 ```bash
-docker run -p 8000:8000 --env-file .env time-capsule-journal
+docker run -p 8000:8000 --env-file .env seabottle
 
 ```
 
